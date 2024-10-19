@@ -1,0 +1,8 @@
+zig-cache/
+zig-out/
+regression.out
+regression.diffs
+results/
+/out
+.zig-cache
+.idea

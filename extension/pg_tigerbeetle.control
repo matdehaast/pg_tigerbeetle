@@ -1,0 +1,5 @@
+# my_extension extension
+comment = 'PGbeetle'
+default_version = '0.1'
+module_pathname = '$libdir/pg_tigerbeetle'
+relocatable = true

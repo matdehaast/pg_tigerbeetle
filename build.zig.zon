@@ -1,0 +1,11 @@
+.{
+    .name = "pg_tigerbeetle",
+    .version = "0.1.0",
+    .paths = .{
+        "extension",
+        "src",
+    },
+    .dependencies = .{
+        .pgzx = .{ .url = "https://github.com/xataio/pgzx/archive/main.tar.gz", .hash = "12208f26bf35dc35f0b7c52d1f94b1c2069a87a0a50bff7a1322572cb3cce9ef0c42" },
+    },
+}
