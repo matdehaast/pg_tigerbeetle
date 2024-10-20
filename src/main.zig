@@ -72,28 +72,9 @@ fn lookup_account() ![:0]const u8 {
     defer sync_mutex.unlock();
     sync_condition.wait(&sync_mutex);
 
-    // var slice = sync_
     const acc = std.mem.bytesAsValue(tb.tb_account_t, sync_result_bytes[0..128]);
 
-    pgzx.elog.Info(@src(), "on_submit_sync: condition unlocked {}", .{acc});
+    pgzx.elog.Info(@src(), "account: {}", .{acc});
 
     return "Hello, world!";
 }
-
-const tb_uint128_t = [16]u8;
-
-const tb_account_t = extern struct {
-    id: tb_uint128_t,
-    debits_pending: tb_uint128_t,
-    debits_posted: tb_uint128_t,
-    credits_pending: tb_uint128_t,
-    credits_posted: tb_uint128_t,
-    user_data_128: tb_uint128_t,
-    user_data_64: u64,
-    user_data_32: u32,
-    reserved: u32,
-    ledger: u32,
-    code: u16,
-    flags: u16,
-    timestamp: u64,
-};
