@@ -8,7 +8,7 @@ const tb = @cImport({
 comptime {
     pgzx.PG_MODULE_MAGIC();
 
-    pgzx.PG_FUNCTION_V1("hello", hello);
+    pgzx.PG_FUNCTION_V1("lookup_account", lookup_account);
 }
 
 pub export fn _PG_init() void {
@@ -35,7 +35,6 @@ fn on_complete(
     result_len: u32,
 ) callconv(.C) void {
     pgzx.elog.Info(@src(),"Inside sync completion handler - response len: {}", .{result_len});
-    pgzx.elog.Info(@src(),"Inside sync completion handler - bytes: {s}", .{bytes});
     sync_mutex.lock();
     @memcpy(sync_result_bytes[0..result_len], bytes[0..result_len]);
     sync_result = .{
@@ -56,7 +55,7 @@ fn getClient() void
     }
 }
 
-fn hello() ![:0]const u8 {
+fn lookup_account() ![:0]const u8 {
     getClient();
 
     var memctx = try pgzx.mem.createAllocSetContext("pg_tigerbeetle_zig_context", .{ .parent = pg.CurrentMemoryContext });
@@ -73,7 +72,28 @@ fn hello() ![:0]const u8 {
     defer sync_mutex.unlock();
     sync_condition.wait(&sync_mutex);
 
-    pgzx.elog.Info(@src(), "on_submit_sync: condition unlocked {}", .{sync_result});
+    // var slice = sync_
+    const acc = std.mem.bytesAsValue(tb.tb_account_t, sync_result_bytes[0..128]);
+
+    pgzx.elog.Info(@src(), "on_submit_sync: condition unlocked {}", .{acc});
 
     return "Hello, world!";
 }
+
+const tb_uint128_t = [16]u8;
+
+const tb_account_t = extern struct {
+    id: tb_uint128_t,
+    debits_pending: tb_uint128_t,
+    debits_posted: tb_uint128_t,
+    credits_pending: tb_uint128_t,
+    credits_posted: tb_uint128_t,
+    user_data_128: tb_uint128_t,
+    user_data_64: u64,
+    user_data_32: u32,
+    reserved: u32,
+    ledger: u32,
+    code: u16,
+    flags: u16,
+    timestamp: u64,
+};
